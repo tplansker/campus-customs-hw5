@@ -229,3 +229,9 @@ This file records the prompts I used with the AI coding assistant for each probl
 > _(Attachment: screenshot of the five Reflection questions: evaluate the agents' performance on each ticket and why; how Actual compared to the Expected plan; what would have been simpler as one agent with tools, and why; three new problems the team could solve with the tools built; three new problems it could not solve, and the tools and agents needed.)_
 
 > Tie every answer to this app and the three tickets you ran - use the ticket tabs and cash tab on the same page as your evidence.
+
+> how do i upload this to github repository now?
+
+> put the URL in output/github_url.txt
+
+> Yes, push them
