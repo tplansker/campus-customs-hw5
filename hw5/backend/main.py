@@ -8,6 +8,11 @@ default http://127.0.0.1:8001/mcp):
 
 Then the API is at http://localhost:8000 (interactive docs at /docs).
 
+Hosted (render_start.sh / render.yaml): the same app also serves the built React board from
+frontend/dist, so the board and its API share one URL. Set DESK_PASSWORD there: every /api route
+except /api/health then needs the header `X-Desk-Password`, so strangers can't run the agents
+(spending the Portkey key) or approve payments.
+
 Tickets are worked one at a time by a background worker so two tickets never race for the same cash.
 Shop data is read and changed through the MCP server; only run bookkeeping (agent_events, ticket_runs)
 and the dashboard's read-only views touch the database directly.
@@ -25,12 +30,16 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import asyncio
+import hmac
 import json
 import logging
+import os
 import uuid
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from backend.agents import MCP_URL, MODEL_NAME, emit, mcp_toolset, work_ticket
 from backend.models import ApprovalDecision, MessageAction, RunRequest
@@ -130,10 +139,28 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Campus Customs Ops", lifespan=lifespan)
+
+# Desk password: unset locally (no gate); set as a secret when the desk is hosted publicly.
+DESK_PASSWORD = os.getenv("DESK_PASSWORD", "").strip()
+OPEN_PATHS = {"/api/health"}
+
+
+@app.middleware("http")
+async def desk_password_gate(request: Request, call_next):
+    if (DESK_PASSWORD and request.url.path.startswith("/api/") and request.url.path not in OPEN_PATHS
+            and request.method != "OPTIONS"):
+        given = request.headers.get("x-desk-password", "")
+        if not hmac.compare_digest(given.encode(), DESK_PASSWORD.encode()):
+            await asyncio.sleep(1)  # slow down password guessing
+            return JSONResponse({"detail": "Desk password required."}, status_code=401)
+    return await call_next(request)
+
+
 # Let the Vite dashboard call these routes from the browser. Vite serves on http://localhost:5173 and moves
 # to the next port (5174, 5175, ...) when that one is busy, so any local port is allowed, but only from this machine.
+# (Hosted, the board is served by this app itself, so its calls are same-origin and need no CORS.)
 app.add_middleware(CORSMiddleware, allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
-                   allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
+                   allow_methods=["GET", "POST"], allow_headers=["Content-Type", "X-Desk-Password"])
 
 
 # ---------------------------------------------------------------- read
@@ -166,15 +193,18 @@ async def approvals(status: str | None = "pending"):
 
 @app.get("/api/health")
 async def health():
-    import os
+    """Liveness for the host and the board: MCP reachable, model, key present, whether a password is needed."""
     mcp_ok, mcp_error = True, None
     try:
         async with mcp_toolset() as ts:
             await ts.list_tools()
     except Exception as exc:
         mcp_ok, mcp_error = False, f"{type(exc).__name__}: {exc}"
-    return {"db_path": str(DB_PATH), "mcp_url": MCP_URL, "mcp_ok": mcp_ok, "mcp_error": mcp_error,
-            "model": MODEL_NAME, "api_key_set": bool(os.getenv("PORTKEY_API_KEY", "").strip())}
+    out = {"mcp_ok": mcp_ok, "model": MODEL_NAME, "api_key_set": bool(os.getenv("PORTKEY_API_KEY", "").strip()),
+           "auth_required": bool(DESK_PASSWORD)}
+    if not DESK_PASSWORD:  # local only: show paths and errors; a public host doesn't reveal them
+        out.update(db_path=str(DB_PATH), mcp_url=MCP_URL, mcp_error=mcp_error)
+    return out
 
 
 @app.get("/api/board")
@@ -303,3 +333,12 @@ def reset_and_run():
     """Full run: restore the original data first, then queue every open ticket."""
     reset()
     return run_open()
+
+
+# ---------------------------------------------------------------- the React board (hosted)
+
+# When the board has been built (npm run build), serve it from this app at "/" so the hosted desk
+# is one URL. Mounted last, so every /api route above takes priority.
+BOARD_DIST = ROOT / "frontend" / "dist"
+if (BOARD_DIST / "index.html").exists():
+    app.mount("/", StaticFiles(directory=BOARD_DIST, html=True), name="board")

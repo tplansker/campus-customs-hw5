@@ -14,7 +14,7 @@ data/*.db-shm
 __pycache__/
 *.pyc
 node_modules/
-frontend/dist/
+# frontend/dist IS committed: the hosted desk serves it if the host can't run npm.
 *.tsbuildinfo
 
 # local tooling / OS

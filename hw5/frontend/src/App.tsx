@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { API_URL, api, type AgentEvent, type AgentKey, type Approval, type Board, type Cash, type Health, type Message, type Ticket } from "./api";
+import { API_URL, AuthError, api, deskPassword, type AgentEvent, type AgentKey, type Approval, type Board, type Cash, type Health, type Message, type Ticket } from "./api";
 import { PERSONAS, TEAM, busyAgents, crewReport, latestRun, money, plain, toolVerb } from "./agents";
 import Bulldog from "./Bulldog";
 
@@ -31,6 +31,8 @@ export default function App() {
   }, []);
   const [offline, setOffline] = useState<string | null>(null);
   const [toast, setToast] = useState<{ text: string; bad?: boolean } | null>(null);
+  // Hosted desks ask for a password; "wrong" means we tried one and the server said no.
+  const [login, setLogin] = useState<null | "ask" | "wrong">(null);
   const lastId = useRef(0);
 
   const refresh = useCallback(async () => {
@@ -49,8 +51,14 @@ export default function App() {
         });
       }
       setOffline(null);
+      setLogin(null);
     } catch (e) {
-      setOffline((e as Error).message);
+      if (e instanceof AuthError) {
+        setOffline(null);
+        setLogin(deskPassword.get() ? "wrong" : "ask");
+      } else {
+        setOffline((e as Error).message);
+      }
     }
   }, []);
 
@@ -79,9 +87,19 @@ export default function App() {
       setToast({ text: r?.effect ?? ok ?? "Done." });
       await refresh();
     } catch (e) {
-      setToast({ text: (e as Error).message, bad: true });
+      if (e instanceof AuthError) setLogin(deskPassword.get() ? "wrong" : "ask");
+      else setToast({ text: (e as Error).message, bad: true });
     }
   }, [refresh]);
+
+  const signIn = (pw: string) => {
+    deskPassword.set(pw);
+    refresh();
+  };
+  const signOut = () => {
+    deskPassword.clear();
+    setLogin("ask");
+  };
 
   const current = board?.worker.current ?? null;
   const busy = current != null || (board?.worker.queued.length ?? 0) > 0;
@@ -108,11 +126,12 @@ export default function App() {
           <span className="winbtns" aria-hidden><i>_</i><i>□</i><i>×</i></span>
         </div>
         <div className="toolbar">
-          <div className="location"><b>Location:</b> <code>{API_URL}/api</code></div>
+          <div className="location"><b>Location:</b> <code>{API_URL || location.origin}/api</code></div>
           <span className={`led ${offline ? "bad" : health?.mcp_ok ? "good" : "bad"}`}>{offline ? "Backend offline" : health?.mcp_ok ? "MCP online" : "MCP offline"}</span>
           <span className="led good">{health?.model ?? "gpt-6-luna"}</span>
           <span className="calendar" title="The shop's 'today' (desk.date_today)">📅 Shop date: <b>{prettyDate(board?.date_today ?? "")}</b></span>
           <button className="w95" onClick={reset} disabled={busy} title={busy ? "Wait for the crew to finish" : "Restore the original data"}>↺ Fresh start</button>
+          {health?.auth_required && <button className="w95" onClick={signOut}>🔒 Sign out</button>}
         </div>
       </div>
 
@@ -163,7 +182,34 @@ export default function App() {
         <span className="badge88" title="Handsome Dan disabled this one for good.">🚫 Harvard Mode: disabled</span>
       </footer>
 
+      {login && <SignIn wrong={login === "wrong"} onSubmit={signIn} />}
+
       {toast && <div className={`toast ${toast.bad ? "bad" : ""}`} role="status">{toast.bad ? "⚠️ " : "✅ "}{toast.text}</div>}
+    </div>
+  );
+}
+
+function SignIn({ wrong, onSubmit }: { wrong: boolean; onSubmit: (pw: string) => void }) {
+  const [pw, setPw] = useState("");
+  useEffect(() => { if (wrong) setPw(""); }, [wrong]);
+  return (
+    <div className="modal" role="dialog" aria-modal="true" aria-labelledby="signin-title">
+      <form className="win signin" onSubmit={(e) => { e.preventDefault(); if (pw) onSubmit(pw); }}>
+        <div className="win-title"><span className="win-icon" aria-hidden>🔒</span><h2 id="signin-title">Campus Customs Online — Staff sign-in</h2></div>
+        <div className="win-body">
+          <div className="signin-row">
+            <Bulldog size={56} title="Handsome Dan" />
+            <div>
+              <p><b>This is the back office.</b> Enter the desk password to watch the crew, run tickets and sign for payments.</p>
+              <label htmlFor="desk-pw" className="small">Desk password</label>
+              <input id="desk-pw" className="sunken" type="password" autoFocus autoComplete="current-password"
+                value={pw} onChange={(e) => setPw(e.target.value)} />
+              {wrong && <p className="bad small" role="alert">⚠️ That password didn't work. Try again.</p>}
+            </div>
+          </div>
+          <div className="signin-actions"><button className="w95 primary" type="submit" disabled={!pw}>Sign in ➤</button></div>
+        </div>
+      </form>
     </div>
   );
 }

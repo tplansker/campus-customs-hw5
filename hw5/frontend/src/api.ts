@@ -1,6 +1,20 @@
-// Client for the FastAPI backend (backend/main.py). The page calls it directly; the backend's CORS
-// settings allow the Vite origin. Set VITE_API_URL in frontend/.env to point somewhere else.
-export const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
+// Client for the FastAPI backend (backend/main.py).
+// - `npm run dev`: calls http://localhost:8000 directly (the backend's CORS allows the Vite origin).
+// - built for hosting (`npm run build`): the backend serves this page, so it calls /api on its own site.
+// Set VITE_API_URL to point somewhere else.
+export const API_URL = (import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? "http://localhost:8000" : "")).replace(/\/$/, "");
+
+// The hosted desk asks for a password (DESK_PASSWORD on the server). It's kept for this browser
+// session only and sent with every API call.
+const PW_KEY = "cc-desk-password";
+export const deskPassword = {
+  get: () => { try { return sessionStorage.getItem(PW_KEY) ?? ""; } catch { return ""; } },
+  set: (v: string) => { try { sessionStorage.setItem(PW_KEY, v); } catch { /* storage blocked */ } },
+  clear: () => { try { sessionStorage.removeItem(PW_KEY); } catch { /* storage blocked */ } },
+};
+
+/** Thrown when the server wants the desk password (HTTP 401). */
+export class AuthError extends Error {}
 
 export type AgentKey = "boss" | "inventory" | "accounting" | "facilities" | "customer_service" | "human";
 
@@ -69,18 +83,25 @@ export type Board = {
   worker: { current: number | null; queued: number[] };
 };
 
-export type Health = { mcp_ok: boolean; mcp_error: string | null; model: string; api_key_set: boolean };
+export type Health = { mcp_ok: boolean; mcp_error?: string | null; model: string; api_key_set: boolean; auth_required?: boolean };
 
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
   try {
     res = await fetch(API_URL + path, {
       ...init,
-      headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+      headers: {
+        "Content-Type": "application/json",
+        ...(deskPassword.get() ? { "X-Desk-Password": deskPassword.get() } : {}),
+        ...(init?.headers ?? {}),
+      },
     });
   } catch {
-    throw new Error(`Can't reach the backend at ${API_URL}. Is it running? (cd backend && uvicorn main:app --reload --port 8000)`);
+    throw new Error(API_URL
+      ? `Can't reach the backend at ${API_URL}. Is it running? (cd backend && uvicorn main:app --reload --port 8000)`
+      : "Can't reach the desk's server. It may be waking up; try again in a minute.");
   }
+  if (res.status === 401) throw new AuthError("Desk password required.");
   if (!res.ok) {
     let detail = `${res.status} ${res.statusText}`;
     try {

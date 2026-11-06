@@ -310,7 +310,15 @@ follow-up run, which requested the $8 restock PO. All earlier entries were kept.
    into the Boss's follow-up run. A manager note on **Run** steers a re-run. In Problem 9, the Boss
    was told to quote only the 8 hoodies in stock and to close #101 once the restock was ordered.
    The agents act on those notes but still can't approve anything themselves.
-10. **Reversible by design.** Agents work on `campus_customs_new.db`. The original is read-only and can
+10. **A password before anyone can touch the hosted desk.** When it's deployed, `DESK_PASSWORD` gates
+    every `/api` route except `/api/health`:
+    - Without the `X-Desk-Password` header a request gets a 401 after a one-second delay, so nobody can
+      read the board, run agents (and spend the Portkey key), reset the data or approve a payment.
+    - The check is constant-time.
+    - The board asks for the password once per browser session (`sessionStorage`) and never stores it
+      for longer.
+    - On a public host, `/api/health` stops showing the server's file paths.
+11. **Reversible by design.** Agents work on `campus_customs_new.db`. The original is read-only and can
    be restored at any time with Reset.
 
 ### Limits that keep token use in check

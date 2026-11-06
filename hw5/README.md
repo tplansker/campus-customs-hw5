@@ -104,6 +104,29 @@ to **$3,400.00**. Reset is refused while the agents are working. Then work the t
 
 `./start.sh` starts the MCP server, backend and board together. Ctrl-C stops all three.
 
+## Put it on the web (Render)
+
+The desk can run as **one free Render web service**. `render_start.sh` starts the MCP server
+privately, then the FastAPI backend, which also serves the built React board. The board, its API
+and the agents all share one URL.
+
+1. In Render, choose **New → Blueprint** and pick this GitHub repo. Render reads `render.yaml` at the
+   repo root (`rootDir: hw5`).
+2. When it asks for the secret values, enter:
+   - **`PORTKEY_API_KEY`**: your Portkey key.
+   - **`DESK_PASSWORD`**: a password you choose. Anyone who opens the site has to enter it before they
+     can see the board, run agents or approve payments. Without it, strangers could spend your Portkey
+     credits and sign for the shop's money.
+3. Deploy, then open the `https://….onrender.com` URL Render gives you and sign in with the desk password.
+
+What to expect on the free plan:
+- It sleeps after about 15 minutes idle, so the first visit takes about a minute to wake up.
+- Its disk isn't permanent. Every restart or redeploy brings the desk back to the committed
+  `data/campus_customs_new.db`, and **↺ Fresh start** resets to the original data as usual.
+
+To try the hosted setup locally first, build the board (`cd frontend && npm run build`), then run
+`PORT=8030 DESK_PASSWORD=test ./render_start.sh` and open http://localhost:8030.
+
 ## The team
 
 | Agent | Role-specific MCP tools | Job |
