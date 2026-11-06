@@ -1,0 +1,23 @@
+# secrets: only .env.example (names, no values) is committed. Never commit the real .env.
+.env
+.env.*
+!.env.example
+
+# databases: both campus_customs.db (original) and campus_customs_new.db (working copy) ARE committed.
+# SQLite's temporary side files are not.
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# environments / builds
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# local tooling / OS
+.claude/
+.DS_Store
+*.log
