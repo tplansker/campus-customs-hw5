@@ -1,0 +1,245 @@
+{
+  "generated_at": "2026-11-06T19:26:51+00:00",
+  "server": {
+    "name": "campus-customs",
+    "framework": "FastMCP",
+    "connection": ".mcp.json (stdio)"
+  },
+  "database": "data/campus_customs_new.db",
+  "all_tools_match_database": true,
+  "results": [
+    {
+      "prompt": "what are the full details for ticket ID number 10",
+      "tool": "get_ticket",
+      "arguments": {
+        "ticket_id": 10
+      },
+      "tool_output": {
+        "error": "Ticket 10 does not exist. Existing ticket ids: [101, 102, 103]."
+      },
+      "db_verification": {
+        "database": "data/campus_customs_new.db",
+        "all_match": true,
+        "checks": [
+          {
+            "check": "SELECT * FROM tickets WHERE id=10 returns no row, so the tool must refuse",
+            "expected": {
+              "ticket_found": false,
+              "existing_ticket_ids": [
+                101,
+                102,
+                103
+              ]
+            },
+            "actual": {
+              "ticket_found": false,
+              "existing_ticket_ids": [
+                101,
+                102,
+                103
+              ]
+            },
+            "match": true
+          }
+        ]
+      }
+    },
+    {
+      "prompt": "can you list all the tickets that currently have and open status?",
+      "tool": "filter_tickets",
+      "arguments": {
+        "status": "open"
+      },
+      "tool_output": {
+        "filters": {
+          "status": "open"
+        },
+        "count": 3,
+        "tickets": [
+          {
+            "id": 101,
+            "type": "customer_order",
+            "requester": "Tauhid Zaman",
+            "subject": "Bulldog tee",
+            "sku": "CC-TEE-WHITE",
+            "size": "S",
+            "qty": 1,
+            "lease_id": null,
+            "invoice_id": 501,
+            "status": "open",
+            "notes": "Needs a tee in size S.",
+            "created_at": "2026-08-31T09:15:00-04:00"
+          },
+          {
+            "id": 102,
+            "type": "rent_notice",
+            "requester": "Elm City Properties",
+            "subject": "Rent due",
+            "sku": null,
+            "size": null,
+            "qty": null,
+            "lease_id": 1,
+            "invoice_id": null,
+            "status": "open",
+            "notes": "Email: shop rent due in 2 days.",
+            "created_at": "2026-08-31T11:05:00-04:00"
+          },
+          {
+            "id": 103,
+            "type": "price_override",
+            "requester": "Yale AI Club",
+            "subject": "Bulk hoodie discount",
+            "sku": "CC-HOOD-NAVY",
+            "size": "M",
+            "qty": 20,
+            "lease_id": null,
+            "invoice_id": null,
+            "status": "open",
+            "notes": "Student org wants 20 hoodies, size M, asking for a bulk discount.",
+            "created_at": "2026-08-31T16:55:00-04:00"
+          }
+        ],
+        "known_statuses": [
+          "open"
+        ],
+        "known_types": [
+          "customer_order",
+          "price_override",
+          "rent_notice"
+        ]
+      },
+      "db_verification": {
+        "database": "data/campus_customs_new.db",
+        "all_match": true,
+        "checks": [
+          {
+            "check": "SELECT * FROM tickets WHERE lower(status) = lower(?)",
+            "params": [
+              "open"
+            ],
+            "expected": [
+              {
+                "id": 101,
+                "type": "customer_order",
+                "requester": "Tauhid Zaman",
+                "subject": "Bulldog tee",
+                "sku": "CC-TEE-WHITE",
+                "size": "S",
+                "qty": 1,
+                "lease_id": null,
+                "invoice_id": 501,
+                "status": "open",
+                "notes": "Needs a tee in size S.",
+                "created_at": "2026-08-31T09:15:00-04:00"
+              },
+              {
+                "id": 102,
+                "type": "rent_notice",
+                "requester": "Elm City Properties",
+                "subject": "Rent due",
+                "sku": null,
+                "size": null,
+                "qty": null,
+                "lease_id": 1,
+                "invoice_id": null,
+                "status": "open",
+                "notes": "Email: shop rent due in 2 days.",
+                "created_at": "2026-08-31T11:05:00-04:00"
+              },
+              {
+                "id": 103,
+                "type": "price_override",
+                "requester": "Yale AI Club",
+                "subject": "Bulk hoodie discount",
+                "sku": "CC-HOOD-NAVY",
+                "size": "M",
+                "qty": 20,
+                "lease_id": null,
+                "invoice_id": null,
+                "status": "open",
+                "notes": "Student org wants 20 hoodies, size M, asking for a bulk discount.",
+                "created_at": "2026-08-31T16:55:00-04:00"
+              }
+            ],
+            "actual": [
+              {
+                "id": 101,
+                "type": "customer_order",
+                "requester": "Tauhid Zaman",
+                "subject": "Bulldog tee",
+                "sku": "CC-TEE-WHITE",
+                "size": "S",
+                "qty": 1,
+                "lease_id": null,
+                "invoice_id": 501,
+                "status": "open",
+                "notes": "Needs a tee in size S.",
+                "created_at": "2026-08-31T09:15:00-04:00"
+              },
+              {
+                "id": 102,
+                "type": "rent_notice",
+                "requester": "Elm City Properties",
+                "subject": "Rent due",
+                "sku": null,
+                "size": null,
+                "qty": null,
+                "lease_id": 1,
+                "invoice_id": null,
+                "status": "open",
+                "notes": "Email: shop rent due in 2 days.",
+                "created_at": "2026-08-31T11:05:00-04:00"
+              },
+              {
+                "id": 103,
+                "type": "price_override",
+                "requester": "Yale AI Club",
+                "subject": "Bulk hoodie discount",
+                "sku": "CC-HOOD-NAVY",
+                "size": "M",
+                "qty": 20,
+                "lease_id": null,
+                "invoice_id": null,
+                "status": "open",
+                "notes": "Student org wants 20 hoodies, size M, asking for a bulk discount.",
+                "created_at": "2026-08-31T16:55:00-04:00"
+              }
+            ],
+            "match": true
+          }
+        ]
+      }
+    },
+    {
+      "prompt": "search the database for any tickets that mention the phrase 'parking pass'",
+      "tool": "search_database",
+      "arguments": {
+        "query": "parking pass",
+        "tables": [
+          "tickets"
+        ]
+      },
+      "tool_output": {
+        "query": "parking pass",
+        "tables_searched": [
+          "tickets"
+        ],
+        "match_count": 0,
+        "matches": {},
+        "note": "No rows contain 'parking pass'. Do not assume it exists."
+      },
+      "db_verification": {
+        "database": "data/campus_customs_new.db",
+        "all_match": true,
+        "checks": [
+          {
+            "check": "no row in any searched table contains 'parking pass'",
+            "expected": 0,
+            "actual": 0,
+            "match": true
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+# secrets — only .env.example (names, no values) is committed
+.env
+.env.*
+!.env.example
+
+# local data pack (unzip data.zip into data/); never commit the databases
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# environments / builds
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# local tooling / OS
+.claude/
+.DS_Store
+*.log

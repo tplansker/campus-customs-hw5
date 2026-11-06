@@ -1,0 +1,17 @@
+[
+  {
+    "prompt": "what are the full details for ticket ID number 10",
+    "tool": "get_ticket",
+    "arguments": {"ticket_id": 10}
+  },
+  {
+    "prompt": "can you list all the tickets that currently have and open status?",
+    "tool": "filter_tickets",
+    "arguments": {"status": "open"}
+  },
+  {
+    "prompt": "search the database for any tickets that mention the phrase 'parking pass'",
+    "tool": "search_database",
+    "arguments": {"query": "parking pass", "tables": ["tickets"]}
+  }
+]

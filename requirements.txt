@@ -1,0 +1,9 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+# Deliberate exception to "pydantic-ai-slim[openai]": the [mcp] extra is needed so agents can use the MCP server's tools.
+pydantic-ai-slim[openai,mcp]>=1.0.0
+mcp>=1.10.0
+# The MCP server is written with FastMCP.
+fastmcp-slim[server]>=4.1.6
+openai>=1.40.0
+python-dotenv>=1.0.1

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resolved Board Screenshots</title>
+<style>
+  :root {
+    --star-bg: #00142e; --yale: #00356b; --yale-2: #286dc0; --pop-yellow: #ffe600; --pop-red: #d7001f;
+    --win: #c0c0c0; --paper: #fffef6; --text: #0b1a33; --muted: #4a566b;
+    --bevel-out: inset -2px -2px 0 #202020, inset 2px 2px 0 #fff, inset -3px -3px 0 #808080;
+    --bevel-in: inset 2px 2px 0 #202020, inset -2px -2px 0 #fff, inset 3px 3px 0 #808080;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--text); font: 14px/1.5 Tahoma, Verdana, "Segoe UI", system-ui, sans-serif;
+    background-color: var(--star-bg);
+    background-image: radial-gradient(1.5px 1.5px at 20px 30px, #fff 50%, transparent 51%),
+      radial-gradient(2px 2px at 150px 60px, var(--pop-yellow) 50%, transparent 51%),
+      radial-gradient(1px 1px at 230px 180px, #fff 50%, transparent 51%),
+      radial-gradient(circle at 50% -10%, #0a4a8f 0%, transparent 60%);
+    background-size: 260px 260px, 260px 260px, 260px 260px, 100% 900px;
+    background-repeat: repeat, repeat, repeat, no-repeat;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 20px 16px 40px; }
+  .win { background: var(--win); box-shadow: var(--bevel-out), 4px 4px 0 rgba(0,0,0,.55); padding: 3px; margin-bottom: 18px; }
+  .title { background: linear-gradient(90deg, var(--yale), var(--yale-2)); color: #fff; font-weight: 700; padding: 5px 8px; font-size: 14px; display: flex; gap: 8px; align-items: center; }
+  .body { background: var(--paper); box-shadow: var(--bevel-in); margin-top: 3px; padding: 14px 16px; }
+  h1 { font-family: Impact, "Arial Narrow Bold", sans-serif; font-weight: 400; font-size: 34px; color: var(--yale); margin: 0 0 4px;
+       text-shadow: 2px 2px 0 var(--pop-yellow), 3px 3px 0 #000; letter-spacing: .01em; }
+  h2 { font-size: 17px; margin: 0 0 6px; }
+  p { margin: 6px 0; }
+  .muted { color: var(--muted); }
+  code { font: 12.5px "Courier New", monospace; }
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-top: 10px; }
+  .summary div { background: #fff; border: 1px solid #c9c7ba; padding: 8px 10px; }
+  .summary b { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+  .summary span { font-size: 18px; font-weight: 700; }
+  .lcd { font-family: "Courier New", monospace; background: #0f2414; color: #7dff9b; padding: 1px 6px; }
+  .stamp { display: inline-block; font-family: Impact, sans-serif; color: var(--pop-red); border: 2px solid var(--pop-red); padding: 0 7px; transform: rotate(-6deg); letter-spacing: .06em; font-size: 13px; margin-left: 6px; }
+  figure { margin: 10px 0 0; }
+  figure a { display: block; border: 2px solid #000; box-shadow: 4px 4px 0 #000; background: #fff; }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { margin-top: 10px; }
+  ul { margin: 6px 0; padding-left: 20px; }
+  li { margin: 3px 0; }
+  nav a { color: #fff; margin-right: 12px; font-weight: 700; }
+  footer { color: #cfe3ff; font-size: 12px; text-align: center; }
+  @media (max-width: 640px) { h1 { font-size: 26px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="win">
+    <div class="title">🖼️ Campus Customs Back Office: resolved board, Problem 9</div>
+    <div class="body">
+      <h1>All three tickets resolved</h1>
+      <p>Screenshots of the <b>React dashboard</b> (<code>frontend/</code>, started with <code>npm run dev</code>), each taken right after that ticket was resolved. The run started from a freshly reset <code>data/campus_customs_new.db</code>, with every agent on <code>gpt-6-luna</code> through Portkey and every payment approved by a human. Click a screenshot to open it full size.</p>
+      <div class="summary">
+        <div><b>Starting checking</b><span>$3,400.00</span></div>
+        <div><b>Paid out (3 approvals)</b><span>−$3,248.00</span></div>
+        <div><b>Ending checking</b><span>$152.00</span></div>
+        <div><b>Tickets resolved</b><span>3 / 3</span></div>
+      </div>
+      <p class="muted">The full itemized ledger is on the Cash tab of <code>desk_tickets.html</code>. Per-ticket details are in <code>resolved_tickets.json</code>.</p>
+    </div>
+  </div>
+
+  <div class="win" id="t101">
+    <div class="title">#101 · Bulldog tee · Tauhid Zaman <span class="stamp">RESOLVED</span></div>
+    <div class="body">
+      <figure>
+        <a href="resolved_board_images/ticket_101.png"><img src="resolved_board_images/ticket_101.png" alt="React board with ticket 101 selected: RESOLVED stamp on the case file, crew report, checking at $2,552.00, and a receipt tape showing invoice 501 −$840.00 and PO #1 −$8.00 marked PAID."></a>
+        <figcaption>
+          <h2>What the board shows</h2>
+          <ul>
+            <li>The <b>RESOLVED</b> stamp is on the case file and the inbox row. The Boss's call: invoice 501 is paid, the 1-unit restock PO is placed (ETA 2026-09-05), and the customer draft is ready.</li>
+            <li>The <b>crew report</b> covers all 4 runs: Inventory found 0 in size S, Accounting prepared approvals #1 and #2, and Customer Service drafted the update.</li>
+            <li>The <b>cash register</b> reads <span class="lcd">$2,552.00</span>. The receipt tape shows <b>invoice #501 −$840.00</b> and <b>PO #1 −$8.00</b>, both PAID ($3,400 → $2,552).</li>
+          </ul>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="win" id="t102">
+    <div class="title">#102 · Rent due · Elm City Properties <span class="stamp">RESOLVED</span></div>
+    <div class="body">
+      <figure>
+        <a href="resolved_board_images/ticket_102.png"><img src="resolved_board_images/ticket_102.png" alt="React board with ticket 102 selected: RESOLVED stamp, crew report for Facilities and Accounting, checking at $152.00, and a receipt tape adding rent #1 −$2,400.00 PAID."></a>
+        <figcaption>
+          <h2>What the board shows</h2>
+          <ul>
+            <li>#102 is stamped <b>RESOLVED</b>. #101 is still resolved in the inbox, and #103 is still open.</li>
+            <li>The <b>crew report</b> shows Facilities verified lease 1 and handed the payment to Accounting, which prepared approval #3.</li>
+            <li>The <b>cash register</b> reads <span class="lcd">$152.00</span>. The tape adds <b>rent #1 −$2,400.00</b> PAID ($2,552 → $152).</li>
+          </ul>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="win" id="t103">
+    <div class="title">#103 · Bulk hoodie discount · Yale AI Club <span class="stamp">RESOLVED</span></div>
+    <div class="body">
+      <figure>
+        <a href="resolved_board_images/ticket_103.png"><img src="resolved_board_images/ticket_103.png" alt="React board with ticket 103 selected: RESOLVED stamp, crew report showing approvals #4 and #5, all three inbox tickets resolved, checking unchanged at $152.00."></a>
+        <figcaption>
+          <h2>What the board shows</h2>
+          <ul>
+            <li>All three inbox rows are <b>RESOLVED</b>. The Boss's call: the 20-unit quote (#4) was rejected, and the quote for the 8 in stock at $36.67 each (#5, $293.36) was approved.</li>
+            <li>The <b>crew report</b> covers 3 runs and 9 handoffs: Inventory found 8 of 20, Accounting found the 40% margin floor, and Customer Service wrote the final draft #6 shown in the Outbox.</li>
+            <li>The <b>cash register</b> still reads <span class="lcd">$152.00</span>. A quote moves no cash, and no PO was placed because the $264 restock was more than the $152 left.</li>
+          </ul>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <footer>Screenshots were taken with headless Chrome from the running React board (<code>?ticket=ID</code>) at 1440 px wide · 2026-11-06</footer>
+</div>
+</body>
+</html>
