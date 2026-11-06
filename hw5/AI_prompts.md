@@ -230,7 +230,7 @@ This file records the prompts I used with the AI coding assistant for each probl
 
 > Tie every answer to this app and the three tickets you ran - use the ticket tabs and cash tab on the same page as your evidence.
 
-## Problem 11: Push to GitHub
+## Problem 11: Submit to GitHub
 
 **Prompt:**
 > how do i upload this to github repository now?
@@ -243,3 +243,5 @@ This file records the prompts I used with the AI coding assistant for each probl
 > do not push my real .env to the repo. Do include both database files unter data/ (the original and the working copy). the expected file layout is in the screenshot attahcment. the README should explain: copy original DB to the working copy when you need a clean run, start MCP server, start FASTAPI backend, start the reacht board, reset the DB before a full three-ticket run
 >
 > _(Attachment: expected repo layout — `hw5/{AI_prompts.md, requirements.txt, .env.example, .gitignore, .mcp.json, README.md, data/{campus_customs.db, campus_customs_new.db}, mcp_server/{server.py, README.md}, frontend/, backend/{main.py, models.py, prompts/{boss.md, inventory.md, accounting.md, facilities.md, customer_service.md}}, output/{harness.md, mcp_smoke.json, desk_tickets.html, design.md, resolved_tickets.json, resolved_board.html, audit_trail.json, github_url.txt}}`)_
+
+> the title to problem #11 is submit to github
